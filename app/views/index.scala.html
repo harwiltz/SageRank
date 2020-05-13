@@ -1,0 +1,21 @@
+@(numArticles: Int)
+
+@main("SageRank") {
+<div class="content">
+  <div class="logo">
+    <img class="pixelized" src="@routes.Assets.versioned("images/SageRankLogo32x32.png")"></img>
+    <h1>SageRank</h1>
+  </div>
+
+  <form class="search-form">
+    <input type="text" id="url" name="url" placeholder="Enter URL of article to add..."><br>
+    <input type="submit" value="Add Article">
+  </form>
+
+  @if(numArticles != 0) {
+  <h3>@numArticles articles in the graph</h3>
+  } else {
+  <h3 class="error-msg">Your graph is empty. Try adding an article!</h3>
+  }
+</div>
+}

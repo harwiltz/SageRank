@@ -1,0 +1,69 @@
+.content {
+  text-align: center;
+  max-width: 1000px;
+  font-family: sans-serif;
+  margin: 0 auto;
+}
+
+.logo {
+  display: block;
+  float: center;
+}
+
+.pixelized {
+  image-rendering: optimizeSpeed;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: pixelated;
+}
+
+.logo img.pixelized {
+  width: 160px;
+  height: 160px;
+}
+
+.error-msg {
+  color: #f66;
+}
+
+.search-form input[type=text] {
+  width: 80%;
+  padding: 4pt;
+  margin: 4pt;
+  font-size: 16pt;
+  border: none;
+  border-radius: 0;
+  border: 1px solid #ccc;
+  background-color: inherit;
+}
+
+.search-form input[type=text]:focus {
+  border: 1px solid rgba(0, 0, 0, 0);
+  box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.2);
+}
+
+.search-form input[type=text]:hover {
+  border: 1px solid rgba(0, 0, 0, 0);
+  box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.2);
+}
+
+.search-form input[type=submit] {
+  padding: 12pt;
+  margin: 8px;
+  font-size: 16pt;
+  background-color: #9888cd;
+  color: white;
+  text-decoration: none;
+  border: none;
+  border-bottom: 2px solid #7666ab;
+  box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-form input[type=submit]:hover {
+  box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.2);
+}
+
+.search-form input[type=submit]:focus {
+  box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.2);
+  background-color: #baaade;
+}
