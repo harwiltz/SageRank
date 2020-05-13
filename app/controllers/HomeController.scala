@@ -13,6 +13,8 @@ import io.github.harwiltz.sagerank._
 @Singleton
 class HomeController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
 
+  type Message = (Int, String)
+
   var graph = new SageRanker
 
   /**
@@ -25,7 +27,19 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   def index() = Action { implicit request: Request[AnyContent] =>
     val requestParams = request.queryString.map { case (k, v) => (k -> v.mkString) }
     val article = requestParams.get("url").flatMap(url => Article.fromURL(url, getReferences = true))
+    val articleMessage = if(requestParams.get("url").getOrElse("").isEmpty) {
+                            None
+                          } else article match {
+                            case None => Some((-1, "Sorry, SageRank could not understand the given URL."))
+                            case Some(artbib) => Some((1, s"Added '${artbib.article.title}' and its citations to your library!"))
+                          }
     article foreach { a => graph = graph.withArticleGraph(a) }
-    Ok(views.html.index(graph.articleMap.size))
+
+    val graphMessage = graph.articleMap.size match {
+      case 0 => Some(-1, "Your graph is empty. Try adding an article!")
+      case n => Some(0, s"${n} articles in the graph")
+    }
+    val messages = Array(graphMessage, articleMessage).flatten
+    Ok(views.html.index(messages, graph.articleMap.size != 0))
   }
 }

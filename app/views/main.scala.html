@@ -4,7 +4,9 @@
  * two arguments, a `String` for the title of the page and an `Html`
  * object to insert into the body of the page.
  *@
-@(title: String)(content: Html)
+@(title: String, navIdx: Int)(content: Html)
+
+@navBarElems = @{Array(("SageRank", "/", Some("images/SageRankLogo32x32.png")), ("Library", "/library", None))}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -19,6 +21,25 @@
         @* And here's where we render the `Html` object containing
          * the page content. *@
         @content
+
+        <ul class="navbar pixelized">
+        @for(i <- (0 to navBarElems.size - 1)) {
+          @if(i == navIdx) {
+          <li class="nav-selected">
+          } else {
+          <li>
+          }
+            <a href="@navBarElems(i)._2">
+              @if(navBarElems(i)._3.nonEmpty) {
+              <img src="@routes.Assets.versioned(navBarElems(i)._3.get)"></img>
+              } else {
+              <img class="dummy"></img>
+              }
+              <span>@navBarElems(i)._1</span>
+            </a>
+          </li>
+        }
+        </ul>
 
       <script src="@routes.Assets.versioned("javascripts/main.js")" type="text/javascript"></script>
     </body>

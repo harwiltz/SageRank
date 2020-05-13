@@ -1,8 +1,12 @@
+body {
+  font-family: sans-serif;
+}
+
 .content {
   text-align: center;
   max-width: 1000px;
-  font-family: sans-serif;
   margin: 0 auto;
+  padding: 64px;
 }
 
 .logo {
@@ -22,8 +26,77 @@
   height: 160px;
 }
 
-.error-msg {
+ul.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  list-style-type: none;
+  text-decoration: none;
+  margin: 0;
+  padding: 0;
+  height: 48px;
+  background-color: #baaade;
+}
+
+.navbar {
+  box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.2);
+}
+
+ul.navbar li {
+  float: left;
+  margin-left: 8px;
+  margin-right: 8px;
+  text-align: center;
+}
+
+ul.navbar li.nav-selected {
+  border: none;
+  border-bottom: 2px solid #337;
+}
+
+ul.navbar li a {
+  display: inline-block;
+  text-decoration: none;
+  height: 48px;
+  padding-left: 8px;
+  padding-right: 8px;
+  color: #337;
+}
+
+ul.navbar li a:hover {
+  background-color: #9888cc;
+}
+
+ul.navbar li a span {
+  display: inline-block;
+  height: 100%;
+}
+
+.navbar img {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  vertical-align: middle;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+ul.messages {
+  list-style-type: none;
+  text-decoration: none;
+  padding: 0;
+}
+
+.bad-message {
   color: #f66;
+}
+
+.good-message {
+  color: #6a6;
 }
 
 .search-form input[type=text] {
@@ -66,4 +139,9 @@
 .search-form input[type=submit]:focus {
   box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.2);
   background-color: #baaade;
+}
+
+img.dummy {
+  width: 0;
+  border: none;
 }

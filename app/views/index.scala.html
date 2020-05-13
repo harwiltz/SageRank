@@ -1,6 +1,6 @@
-@(numArticles: Int)
+@(messages: Array[(Int, String)], graphPopulated: Boolean)
 
-@main("SageRank") {
+@main("SageRank", 0) {
 <div class="content">
   <div class="logo">
     <img class="pixelized" src="@routes.Assets.versioned("images/SageRankLogo32x32.png")"></img>
@@ -12,10 +12,16 @@
     <input type="submit" value="Add Article">
   </form>
 
-  @if(numArticles != 0) {
-  <h3>@numArticles articles in the graph</h3>
-  } else {
-  <h3 class="error-msg">Your graph is empty. Try adding an article!</h3>
+  <ul class="messages">
+  @for(message <- messages) {
+    @if(message._1 == -1) {
+    <li class="bad-message">@message._2
+    } else if(message._1 == 0) {
+    <li class="neutral-message">@message._2
+    } else if(message._1 == 1) {
+    <li class="good-message">@message._2
+    }
   }
+  </ul>
 </div>
 }
