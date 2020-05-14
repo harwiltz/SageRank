@@ -1,4 +1,5 @@
-@(messages: Array[(Int, String)], graphPopulated: Boolean)
+@import io.github.harwiltz.sagerank.ArticleMetadata
+@(messages: Array[(Int, String)], graphPopulated: Boolean, suggestion: Option[ArticleMetadata] = None)
 
 @main("SageRank", 0) {
 <div class="content">
@@ -9,7 +10,12 @@
 
   <form class="search-form">
     <input type="text" id="url" name="url" placeholder="Enter URL of article to add..."><br>
-    <input type="submit" value="Add Article">
+    <button type="submit" formaction="/">Add Article</button>
+    @if(graphPopulated) {
+    <button type="submit" formaction="/suggestion" style="background-color: #cfcd77;">Suggestion</button>
+    } else {
+    <button type="submit" formaction="/suggestion" style="background-color: #cfcd77;" disabled>Suggestion</button>
+    }
   </form>
 
   <ul class="messages">
@@ -23,5 +29,17 @@
     }
   }
   </ul>
+
+  @if(suggestion.nonEmpty) {
+  <div class="paper">
+    <hr>
+    <h1>@suggestion.get.title</h1>
+    <hr>
+    <p>@suggestion.get.authors.mkString(", ")</p>
+    <p><i>@suggestion.get.year</i></p>
+    <h2 class="abstract-header">Abstract</h2>
+    <p class="abstract-text">@suggestion.get.abs</p>
+  </div>
+  }
 </div>
 }

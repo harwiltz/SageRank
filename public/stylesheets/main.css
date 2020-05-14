@@ -1,5 +1,19 @@
+html {
+  height: 100%;
+}
+
 body {
   font-family: sans-serif;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+body::after {
+  content: '';
+  display: block;
+  height: 200px;
 }
 
 .content {
@@ -7,6 +21,7 @@ body {
   max-width: 1000px;
   margin: 0 auto;
   padding: 64px;
+  height: 100%;
 }
 
 .logo {
@@ -128,7 +143,7 @@ ul.messages {
   color: white;
   text-decoration: none;
   border: none;
-  border-bottom: 2px solid #7666ab;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
   box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -141,7 +156,55 @@ ul.messages {
   background-color: #baaade;
 }
 
+.search-form button {
+  padding: 12pt;
+  margin: 8px;
+  font-size: 16pt;
+  background-color: #9888cd;
+  color: white;
+  text-decoration: none;
+  border: none;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-form button:hover {
+  box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.2);
+}
+
+.search-form button:focus {
+  box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.2);
+  background-color: #baaade;
+}
+
+.paper {
+  padding: 2cm;
+  border: none;
+  box-shadow: 0 0 32px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  font-family: serif;
+}
+
+.paper p.abstract-text {
+  text-align: justify;
+  text-justify: inter-word;
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
 img.dummy {
   width: 0;
   border: none;
+}
+
+footer {
+  height: 200px;
+  padding: 16px;
+  color: white;
+  width: 100%;
+  left: 0;
+  margin-top: auto;
+  background-color: #444477;
+  position: absolute;
+  bottom: 0;
 }

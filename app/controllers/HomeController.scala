@@ -46,6 +46,23 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     Ok(views.html.index(messages, graph.articleMap.size != 0))
   }
 
+  def suggestion() = Action { implicit request: Request[AnyContent] =>
+    val requestParams = request.queryString.map { case (k, v) => (k -> v.mkString) }
+
+    val graphMessage = graph.articleMap.size match {
+      case 0 => Some(-1, "Your graph is empty. Try adding an article!")
+      case n => Some(0, s"${n} articles in the graph")
+    }
+    val messages = Array(graphMessage).flatten
+    val suggestedArticle = if(graph.articleMap.isEmpty) {
+                             None
+                           } else {
+                             val article = graph.suggestUnread
+                             Some(Article.attachAbstract(article).article)
+                           }
+    Ok(views.html.index(messages, graph.articleMap.size != 0, suggestedArticle))
+  }
+
   def withSaveGraph(path: String)(thunk: => Unit): Unit = graph.synchronized {
     thunk
     SageRankerFactory.save(graph, graphPath)
