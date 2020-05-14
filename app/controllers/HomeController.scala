@@ -15,7 +15,10 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
 
   type Message = (Int, String)
 
-  var graph = new SageRanker
+  val graphPath = "graph.json"
+
+  var graph = SageRankerFactory.fromFile(graphPath)
+                               .getOrElse(new SageRanker)
 
   /**
    * Create an Action to render an HTML page.
@@ -33,7 +36,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
                             case None => Some((-1, "Sorry, SageRank could not understand the given URL."))
                             case Some(artbib) => Some((1, s"Added '${artbib.article.title}' and its citations to your library!"))
                           }
-    article foreach { a => graph = graph.withArticleGraph(a) }
+    article foreach { a => withSaveGraph(graphPath) { graph = graph.withArticleGraph(a) } }
 
     val graphMessage = graph.articleMap.size match {
       case 0 => Some(-1, "Your graph is empty. Try adding an article!")
@@ -41,5 +44,10 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     }
     val messages = Array(graphMessage, articleMessage).flatten
     Ok(views.html.index(messages, graph.articleMap.size != 0))
+  }
+
+  def withSaveGraph(path: String)(thunk: => Unit): Unit = graph.synchronized {
+    thunk
+    SageRankerFactory.save(graph, graphPath)
   }
 }
