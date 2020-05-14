@@ -74,6 +74,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
                       Vector[String](),
                       "",
                       "",
+                      "",
                       UnreadArticle)
     }
     val artbib = articleMetadata.map(am => ArticleBibliography(am, Vector[ArticleBibliography]()))
