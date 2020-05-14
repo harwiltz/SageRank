@@ -63,6 +63,51 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     Ok(views.html.index(messages, graph.articleMap.size != 0, suggestedArticle))
   }
 
+  def updateStatus() = Action { implicit request: Request[AnyContent] =>
+    val requestParams = request.queryString.map { case (k, v) => (k -> v.mkString) }
+
+    val articleId = requestParams.get("articleid")
+    val articleTitle = requestParams.get("title").getOrElse("Unknown Title")
+    val articleMetadata = articleId.map { id =>
+      ArticleMetadata(id,
+                      articleTitle,
+                      Vector[String](),
+                      "",
+                      "",
+                      UnreadArticle)
+    }
+    val artbib = articleMetadata.map(am => ArticleBibliography(am, Vector[ArticleBibliography]()))
+
+    val articleMessage = requestParams.get("status").flatMap { statusCode =>
+      val status = statusCode.toInt match {
+        case 0 => ReadArticle
+        case 1 => InterestedInArticle
+        case _ => UnreadArticle
+      }
+      artbib.map { a =>
+        val title = graph.articleMap.get(a.article.id).map(x => x.article.title)
+        withSaveGraph(graphPath) { graph = graph.withChangedStatus(status)(a) }
+        title match {
+          case None => (-1, "Couldn't find requested article in library.")
+          case Some(t) => (1, s"Expanded citation tree for '${t}'.")
+        }
+      }
+    }
+
+    val graphMessage = graph.articleMap.size match {
+      case 0 => Some(-1, "Your graph is empty. Try adding an article!")
+      case n => Some(0, s"${n} articles in the graph")
+    }
+    val messages = Array(graphMessage, articleMessage).flatten
+    val suggestedArticle = if(graph.articleMap.isEmpty) {
+                             None
+                           } else {
+                             val article = graph.suggestUnread
+                             Some(Article.attachAbstract(article).article)
+                           }
+    Ok(views.html.index(messages, graph.articleMap.size != 0, suggestedArticle))
+  }
+
   def withSaveGraph(path: String)(thunk: => Unit): Unit = graph.synchronized {
     thunk
     SageRankerFactory.save(graph, graphPath)

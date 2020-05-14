@@ -39,6 +39,12 @@
     <p><i>@suggestion.get.year</i></p>
     <h2 class="abstract-header">Abstract</h2>
     <p class="abstract-text">@suggestion.get.abs</p>
+    <br>
+    <form>
+      <input type="hidden" id="articleid" name="articleid" value="@suggestion.get.id">
+      <button type="submit" name="status" value="0" formaction="/updateStatus">Already Read</button>
+      <button type="submit" name="status" value="1" formaction="/updateStatus">Interested</button>
+    </form>
   </div>
   }
 </div>

@@ -7,6 +7,7 @@
 GET     /                           controllers.HomeController.index
 GET     /library                    controllers.LibraryController.showLibrary
 GET     /suggestion                 controllers.HomeController.suggestion
+GET     /updateStatus               controllers.HomeController.updateStatus
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
