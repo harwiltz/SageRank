@@ -22,8 +22,18 @@
       <li>
         <a href="@article.url">
           <div class="library-article">
-            <p class="library-article-title"><b>@article.title</b> (@article.year)</p>
-            <p class="library-article-authors">@article.authors.mkString(", ")</p>
+            <span class="library-article-data">
+              <p class="library-article-title"><b>@article.title</b> (@article.year)</p>
+              <p class="library-article-authors">@article.authors.mkString(", ")</p>
+            </span>
+            <form class="update-status">
+              <input type="hidden" name="status" value="@idx">
+              <input type="hidden" name="articleid" value="@article.id">
+              <button class="reject" formaction="/libraryUpdateStatus" name="statusDelta" value="1">&#10007;</button>
+              @if(idx > 0) {
+              <button class="accept" formaction="/libraryUpdateStatus" name="statusDelta" value="-1">&#10003;</button>
+              }
+            </form>
           </div>
         </a>
       </li>

@@ -233,7 +233,7 @@ ul.messages {
 }
 
 .column-label button.selected {
-  border-bottom: 2px solid #aa0;
+  border-bottom: 2px solid #cfcd77;
   color: #337;
 }
 
@@ -284,6 +284,44 @@ ul.messages {
 .library-article-title {
   padding-top: 8px;
   margin-top: 0;
+}
+
+.library-article-data {
+  display: inline-block;
+}
+
+.update-status {
+  float: right;
+  height: 100%;
+  vertical-align: middle;
+  margin: auto;
+}
+
+.update-status button {
+  display: inline-block;
+  height: 100%;
+  border: none;
+  text-decoration: none;
+  padding: 1em;
+  margin: 4px;
+}
+
+.update-status button:hover {
+  filter: brightness(1.1);
+}
+
+.library-article:hover .update-status button {
+  box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.1);
+  color: white;
+  border: 2px solid white;
+}
+
+.library-article:hover .update-status button.accept {
+  background-color: #6b6;
+}
+
+.library-article:hover .update-status button.reject {
+  background-color: #f66;
 }
 
 img.dummy {
