@@ -1,9 +1,34 @@
-@()
+@import io.github.harwiltz.sagerank.ArticleMetadata
+@(idx: Int, columns: Array[String], library: Iterable[ArticleMetadata])
 
 @main("Library", 1) {
 <div class="content">
-  <img class="pixelized" width="320px" height="320px" src="@routes.Assets.versioned("images/SageRankLogo32x32.png")"></img>
-  <br>
-  <h1>This page hasn't been built yet :(</h1>
+  <div class="column-sel-bar">
+    <form class="column-sel">
+      @for(i <- (0 to columns.size - 1)) {
+      <span class="column-label">
+        @if(i == idx) {
+        <button class="selected" formaction="/library" name="status" value="@i" disabled>@columns(i)</button>
+        } else {
+        <button formaction="/library" name="status" value="@i">@columns(i)</button>
+        }
+      </span>
+      }
+    </form>
+  </div>
+  <div class="library-content">
+    <ul class="library-list">
+      @for(article <- library) {
+      <li>
+        <a href="@article.url">
+          <div class="library-article">
+            <p class="library-article-title"><b>@article.title</b> (@article.year)</p>
+            <p class="library-article-authors">@article.authors.mkString(", ")</p>
+          </div>
+        </a>
+      </li>
+      }
+    </ul>
+  </div>
 </div>
 }

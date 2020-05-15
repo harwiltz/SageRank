@@ -192,6 +192,100 @@ ul.messages {
   padding-right: 10%;
 }
 
+.column-sel-bar {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+.column-sel {
+  display: block;
+  float: center;
+  text-align: center;
+}
+
+.column-label {
+  display: inline-block;
+  min-width: 120px;
+  width: 20%;
+  max-width: 150px;
+  padding: 0.0em;
+  float: center;
+  height: 48px;
+}
+
+.column-label button {
+  padding: 0.8em;
+  width: 100%;
+  height: 100%;
+  border: none;
+  font-size: 12pt;
+  background: #baaade;
+  color: #337;
+}
+
+.column-label button:hover {
+  background-color: #9888cc;
+}
+
+.column-label button.selected {
+  border-bottom: 2px solid #aa0;
+  color: #337;
+}
+
+.library-content {
+  margin-top: 0px;
+}
+
+.library-list {
+  list-style-type: none;
+  margin: 0;
+  display: block;
+}
+
+.library-list li a {
+  text-decoration: none;
+  margin: 0;
+  padding: 0;
+  color: inherit;
+  display: block;
+}
+
+.library-list li {
+  height: 100%;
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+.library-article {
+  display: block;
+  text-align: left;
+  border-bottom: 2px solid #bbbbbb;
+  color: #444;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.library-article:hover {
+  background-color: #baaade33;
+  color: black;
+  border-color: #999;
+}
+
+.library-article-authors {
+  font-size: 90%;
+}
+
+.library-article-title {
+  padding-top: 8px;
+  margin-top: 0;
+}
+
 img.dummy {
   width: 0;
   border: none;

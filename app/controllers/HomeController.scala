@@ -15,11 +15,6 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
 
   type Message = (Int, String)
 
-  val graphPath = "graph.json"
-
-  var graph = SageRankerFactory.fromFile(graphPath)
-                               .getOrElse(new SageRanker)
-
   /**
    * Create an Action to render an HTML page.
    *
@@ -36,31 +31,31 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
                             case None => Some((-1, "Sorry, SageRank could not understand the given URL."))
                             case Some(artbib) => Some((1, s"Added '${artbib.article.title}' and its citations to your library!"))
                           }
-    article foreach { a => withSaveGraph(graphPath) { graph = graph.withArticleGraph(a) } }
+    article foreach { a => State.withSaveGraph(State.graphPath) { State.graph = State.graph.withArticleGraph(a) } }
 
-    val graphMessage = graph.articleMap.size match {
+    val graphMessage = State.graph.articleMap.size match {
       case 0 => Some(-1, "Your graph is empty. Try adding an article!")
       case n => Some(0, s"${n} articles in the graph")
     }
     val messages = Array(graphMessage, articleMessage).flatten
-    Ok(views.html.index(messages, graph.articleMap.size != 0))
+    Ok(views.html.index(messages, State.graph.articleMap.size != 0))
   }
 
   def suggestion() = Action { implicit request: Request[AnyContent] =>
     val requestParams = request.queryString.map { case (k, v) => (k -> v.mkString) }
 
-    val graphMessage = graph.articleMap.size match {
+    val graphMessage = State.graph.articleMap.size match {
       case 0 => Some(-1, "Your graph is empty. Try adding an article!")
       case n => Some(0, s"${n} articles in the graph")
     }
     val messages = Array(graphMessage).flatten
-    val suggestedArticle = if(graph.articleMap.isEmpty) {
+    val suggestedArticle = if(State.graph.articleMap.isEmpty) {
                              None
                            } else {
-                             val article = graph.suggestUnread
+                             val article = State.graph.suggestUnread
                              Some(Article.attachAbstract(article).article)
                            }
-    Ok(views.html.index(messages, graph.articleMap.size != 0, suggestedArticle))
+    Ok(views.html.index(messages, State.graph.articleMap.size != 0, suggestedArticle))
   }
 
   def updateStatus() = Action { implicit request: Request[AnyContent] =>
@@ -80,14 +75,10 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     val artbib = articleMetadata.map(am => ArticleBibliography(am, Vector[ArticleBibliography]()))
 
     val articleMessage = requestParams.get("status").flatMap { statusCode =>
-      val status = statusCode.toInt match {
-        case 0 => ReadArticle
-        case 1 => InterestedInArticle
-        case _ => UnreadArticle
-      }
+      val status = State.decodeArticleStatus(statusCode.toInt)
       artbib.map { a =>
-        val title = graph.articleMap.get(a.article.id).map(x => x.article.title)
-        withSaveGraph(graphPath) { graph = graph.withChangedStatus(status)(a) }
+        val title = State.graph.articleMap.get(a.article.id).map(x => x.article.title)
+        State.withSaveGraph(State.graphPath) { State.graph = State.graph.withChangedStatus(status)(a) }
         title match {
           case None => (-1, "Couldn't find requested article in library.")
           case Some(t) => (1, s"Expanded citation tree for '${t}'.")
@@ -95,22 +86,17 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
       }
     }
 
-    val graphMessage = graph.articleMap.size match {
+    val graphMessage = State.graph.articleMap.size match {
       case 0 => Some(-1, "Your graph is empty. Try adding an article!")
       case n => Some(0, s"${n} articles in the graph")
     }
     val messages = Array(graphMessage, articleMessage).flatten
-    val suggestedArticle = if(graph.articleMap.isEmpty) {
+    val suggestedArticle = if(State.graph.articleMap.isEmpty) {
                              None
                            } else {
-                             val article = graph.suggestUnread
+                             val article = State.graph.suggestUnread
                              Some(Article.attachAbstract(article).article)
                            }
-    Ok(views.html.index(messages, graph.articleMap.size != 0, suggestedArticle))
-  }
-
-  def withSaveGraph(path: String)(thunk: => Unit): Unit = graph.synchronized {
-    thunk
-    SageRankerFactory.save(graph, graphPath)
+    Ok(views.html.index(messages, State.graph.articleMap.size != 0, suggestedArticle))
   }
 }
