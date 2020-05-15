@@ -288,6 +288,7 @@ ul.messages {
 
 .library-article-data {
   display: inline-block;
+  width: 75%;
 }
 
 .update-status {
