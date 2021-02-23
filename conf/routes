@@ -9,6 +9,10 @@ GET     /library                    controllers.LibraryController.showLibrary
 GET     /suggestion                 controllers.HomeController.suggestion
 GET     /updateStatus               controllers.HomeController.updateStatus
 GET     /libraryUpdateStatus        controllers.LibraryController.updateStatus
+GET	/login			    controllers.LoginController.index
++ nocsrf
+POST	/loginCredentials	    controllers.LoginController.login
+GET	/newUser		    controllers.LoginController.newUser
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

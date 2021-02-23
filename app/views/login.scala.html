@@ -1,0 +1,23 @@
+@(form: Form[UserCredentials])(implicit request: MessagesRequestHeader)
+
+<html>
+  <head>
+    <title>SageRank Login</title>
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+    <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/SageRankLogo32x32.png")">
+  </head>
+  <body>
+    <div class="content">
+      <div class="logo">
+	<img class="pixelized" src="@routes.Assets.versioned("images/SageRankLogo32x32.png")"></img>
+	<h1>SageRank</h1>
+      </div>
+      @helper.CSRF.formField
+      @helper.form(action = routes.LoginController.login()) {
+      @helper.inputText(form("email"))
+      @helper.inputPassword(form("password"))
+      <input type="submit" value="Log in">
+      }
+    </div>
+  </body>
+</html>
