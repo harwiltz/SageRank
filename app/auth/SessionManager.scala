@@ -11,7 +11,9 @@ import scala.collection.mutable
 
 import scala.concurrent.{ExecutionContext, Future}
 
-case class Session(token: String, username: String, expiration: LocalDateTime)
+import state._
+
+case class Session(token: String, user: SageRankerState, expiration: LocalDateTime)
 
 object SessionManager {
   private val sessions = mutable.Map.empty[String, Session]
@@ -29,21 +31,22 @@ object SessionManager {
 
   def newSession(username: String): String = {
     val token = s"$username-token-${UUID.randomUUID().toString}"
+    val sageRanker = new FirestoreSageRanker(State.fireStore, username)
     sessions.synchronized {
-      sessions.put(token, Session(token, username, LocalDateTime.now().plusHours(24)))
+      sessions.put(token, Session(token, sageRanker, LocalDateTime.now().plusHours(24)))
     }
 
     token
   }
 
-  def getSessionUser(request: RequestHeader): Option[String] = {
+  def getSessionUser(request: RequestHeader): Option[SageRankerState] = {
     request.session.get("sessionToken")
       .flatMap(sessions.get(_))
-      .map(_.username)
+      .map(_.user)
   }
 }
 
-class UserRequest[A](val username: Option[String], val request: Request[A])
+class UserRequest[A](val user: Option[SageRankerState], val request: Request[A])
     extends WrappedRequest[A](request)
 
 class UserAction @Inject()(val parser: BodyParsers.Default)(implicit val executionContext: ExecutionContext)

@@ -8,6 +8,7 @@ import io.github.harwiltz.sagerank._
 
 import auth.UserRequest
 import auth.UserAction
+import state._
 
 /**
  * This controller creates an `Action` to handle HTTP requests to the
@@ -26,16 +27,16 @@ class LibraryController @Inject()(val controllerComponents: ControllerComponents
    * a path of `/`.
    */
   def showLibrary() = userAction { implicit userRequest: UserRequest[AnyContent] =>
-    userRequest.username.map { username =>
+    userRequest.user.map { user =>
       val requestParams = userRequest.request.queryString.map { case (k, v) => (k -> v.mkString) }
       val statusCode: Int = requestParams.get("status").map(_.toInt).getOrElse(1) // Default to "To-read" column
-      val library: Iterable[ArticleMetadata] = getLibrary(State.decodeArticleStatus(statusCode))
-      Ok(views.html.library(username, statusCode, libraryStatusColumns, library))
+      val library: Iterable[ArticleMetadata] = getLibrary(user, State.decodeArticleStatus(statusCode))
+      Ok(views.html.library(user.username, statusCode, libraryStatusColumns, library))
     }.getOrElse(Redirect("/login").withNewSession)
   }
 
   def updateStatus() = userAction { implicit userRequest: UserRequest[AnyContent] =>
-    userRequest.username.map { username =>
+    userRequest.user.map { user =>
       val requestParams = userRequest.request.queryString.map { case (k, v) => (k -> v.mkString) }
       val statusCode: Int = requestParams.get("status").map(_.toInt).getOrElse(1) // Default to "To-read" column
       val statusDeltaCode: Int = requestParams.get("statusDelta").map(_.toInt).getOrElse(0)
@@ -54,10 +55,10 @@ class LibraryController @Inject()(val controllerComponents: ControllerComponents
       val articleMessage = requestParams.get("status").flatMap { statusCode =>
         val status = State.decodeArticleStatus(statusCode.toInt + statusDeltaCode)
         artbib.map { a =>
-          val title = State.graph.articleMap.get(a.article.id).map(x => x.article.title)
+          val title = user.graph.articleMap.get(a.article.id).map(x => x.article.title)
           val forceChange = statusDeltaCode > 0
-          State.withSaveGraph(State.graphPath) {
-            State.graph = State.graph.withChangedStatus(status, forceChange)(a)
+          user.withSaveGraph {
+            user.graph = user.graph.withChangedStatus(status, forceChange)(a)
           }
           title match {
             case None => (-1, "Couldn't find requested article in library.")
@@ -65,15 +66,17 @@ class LibraryController @Inject()(val controllerComponents: ControllerComponents
           }
         }
       }
-      val library: Iterable[ArticleMetadata] = getLibrary(State.decodeArticleStatus(statusCode))
-      Ok(views.html.library(username, statusCode, libraryStatusColumns, library))
+      val library: Iterable[ArticleMetadata] = getLibrary(user, State.decodeArticleStatus(statusCode))
+      Ok(views.html.library(user.username, statusCode, libraryStatusColumns, library))
     }.getOrElse(Redirect("/login").withNewSession)
   }
 
-  def getLibrary(status: ArticleStatus): Iterable[ArticleMetadata] = State.graph.articleMap.filter { case(id, artbib) =>
-    artbib.article.status match {
-      case `status` => true
-      case _ => false
-    }
-  }.map { case (k, v) => v.article }
+  def getLibrary(sageRanker: SageRankerState, status: ArticleStatus): Iterable[ArticleMetadata] = {
+    sageRanker.graph.articleMap.filter { case(id, artbib) =>
+      artbib.article.status match {
+        case `status` => true
+        case _ => false
+      }
+    }.map { case (k, v) => v.article }
+  }
 }
