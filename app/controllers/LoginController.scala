@@ -1,5 +1,6 @@
 package controllers
 
+import java.util.HashMap
 import javax.inject._
 import play.api._
 import play.api.data._
@@ -7,9 +8,15 @@ import play.api.data.Forms._
 import play.api.data.validation.Constraints._
 import play.api.mvc._
 
+import com.google.auth.oauth2.GoogleCredentials
+import com.google.cloud.firestore.Firestore
+import com.google.cloud.firestore.FirestoreOptions
+
 import io.github.harwiltz.sagerank._
 
-case class UserCredentials(email: String, password: String)
+import auth.SessionManager
+
+case class UserCredentials(username: String, password: String)
 
 object PasswordManager {
   import java.security.SecureRandom
@@ -23,7 +30,7 @@ object PasswordManager {
   def pbkdf2(password: String, salt: Array[Byte], iterations: Int): Array[Byte] = {
     val keySpec = new PBEKeySpec(password.toCharArray, salt, iterations, 256)
     val keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
-    keyfactory.generateSecret(keySpec).getEncoded
+    keyFactory.generateSecret(keySpec).getEncoded
   }
 
   def hash(password: String): String = {
@@ -36,11 +43,11 @@ object PasswordManager {
   }
 
   def check(password: String, pwdHash: String) = {
-    pwdHash.split(":").match {
+    pwdHash.split(":") match {
       case Array(iterations, saltStr, hashStr) if iterations.forall(_.isDigit) => {
         val hashDcd = Base64.getDecoder.decode(hashStr)
         val saltDcd = Base64.getDecoder.decode(saltStr)
-        val passwordHash = pbkfd2(password, saltDcd, iterations)
+        val passwordHash = pbkdf2(password, saltDcd, iterations.toInt)
         passwordHash.sameElements(hashDcd)
       }
       case other => false
@@ -53,10 +60,17 @@ class LoginController @Inject()(messagesAction: MessagesActionBuilder,
   val controllerComponents: ControllerComponents) extends BaseController {
   val form = Form(
     mapping(
-      "email" -> email,
+      "username" -> nonEmptyText(minLength = 4),
       "password" -> nonEmptyText(minLength = 8)
     )(UserCredentials.apply)(UserCredentials.unapply)
   )
+
+  lazy val firestoreOptions = FirestoreOptions.getDefaultInstance().toBuilder()
+    .setProjectId("supervisor-trailer")
+    .setCredentials(GoogleCredentials.getApplicationDefault)
+    .build
+
+  lazy val db = firestoreOptions.getService
 
   def index() = messagesAction { implicit request: MessagesRequest[AnyContent] =>
     Ok(views.html.login(form))
@@ -68,9 +82,26 @@ class LoginController @Inject()(messagesAction: MessagesActionBuilder,
         BadRequest(views.html.login(err))
       },
       credentials => {
-        Ok(s"User: ${credentials.email}, Password: ${credentials.password}")
+        val docRef = db.collection("users").document(credentials.username).get
+        docRef.get.exists match {
+          case true => {
+            val passwordHash = docRef.get.get("password")
+            if(PasswordManager.check(credentials.password, passwordHash.toString)) {
+              val token = SessionManager.newSession(credentials.username)
+              Redirect(routes.HomeController.index())
+                .withSession(request.session + ("sessionToken" -> token))
+            } else {
+              Unauthorized(views.html.defaultpages.unauthorized()).withNewSession
+            }
+          }
+          case false => BadRequest("Invalid username")
+        }
       }
     )
+  }
+
+  def logout() = Action {
+    Redirect("/login").withNewSession
   }
 
   def newUser = TODO

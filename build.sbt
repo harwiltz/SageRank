@@ -13,6 +13,8 @@ libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test
 libraryDependencies += "io.github.harwiltz" % "sagerank" % "1.0-SNAPSHOT"
 
+libraryDependencies += "com.google.cloud" % "google-cloud-firestore" % "2.2.3"
+
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "io.github.harwiltz.controllers._"
 

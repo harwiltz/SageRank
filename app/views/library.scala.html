@@ -1,7 +1,7 @@
 @import io.github.harwiltz.sagerank.ArticleMetadata
-@(idx: Int, columns: Array[String], library: Iterable[ArticleMetadata])
+@(username: String, idx: Int, columns: Array[String], library: Iterable[ArticleMetadata])
 
-@main("Library", 1) {
+@main(username, "Library", 1) {
 <div class="content">
   <div class="column-sel-bar">
     <form class="column-sel">

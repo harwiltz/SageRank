@@ -4,7 +4,7 @@
  * two arguments, a `String` for the title of the page and an `Html`
  * object to insert into the body of the page.
  *@
-@(title: String, navIdx: Int)(content: Html)
+@(username: String, title: String, navIdx: Int)(content: Html)
 
 @navBarElems = @{Array(("SageRank", "/", Some("images/SageRankLogo32x32.png")), ("Library", "/library", None))}
 
@@ -35,6 +35,8 @@
             </a>
           </li>
         }
+	  <li class="nav-right"><a href="/logout"><img class="dummy"></img><span>Logout</span></a></li>
+	  <li class="nav-right"><img class="dummy"></img><span>Hello, @username</span></li>
         </ul>
 
         @content

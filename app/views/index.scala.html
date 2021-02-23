@@ -1,7 +1,7 @@
 @import io.github.harwiltz.sagerank.ArticleMetadata
-@(messages: Array[(Int, String)], graphPopulated: Boolean, suggestion: Option[ArticleMetadata] = None)
+@(username: String, messages: Array[(Int, String)], graphPopulated: Boolean, suggestion: Option[ArticleMetadata] = None)
 
-@main("SageRank", 0) {
+@main(username, "SageRank", 0) {
 <div class="content">
   <div class="logo">
     <img class="pixelized" src="@routes.Assets.versioned("images/SageRankLogo32x32.png")"></img>

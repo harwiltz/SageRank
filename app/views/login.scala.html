@@ -14,7 +14,7 @@
       </div>
       @helper.CSRF.formField
       @helper.form(action = routes.LoginController.login()) {
-      @helper.inputText(form("email"))
+      @helper.inputText(form("username"))
       @helper.inputPassword(form("password"))
       <input type="submit" value="Log in">
       }
