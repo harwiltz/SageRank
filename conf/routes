@@ -14,6 +14,8 @@ GET	/login			    controllers.LoginController.index
 POST	/loginCredentials	    controllers.LoginController.login
 GET	/newUser		    controllers.LoginController.newUser
 GET	/logout			    controllers.LoginController.logout
++ nocsrf
+POST	/register		    controllers.LoginController.register
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

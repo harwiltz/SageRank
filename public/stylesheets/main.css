@@ -347,3 +347,39 @@ footer {
   position: absolute;
   bottom: 0;
 }
+
+dd.info {
+    display: none;
+}
+
+dd {
+    display: inline-block;
+    margin: inherit;
+    margin-top: auto;
+}
+
+dt label {
+    font-size: 75%;
+    padding: 0;
+    text-align: left;
+}
+
+input[type=submit] {
+    display: inline-block;
+    padding: 16px;
+    background-color: #9888cd;
+    border: none;
+    transition: background-color 0.3s ease-in-out;
+    color: white;
+    box-shadow: 2px 4px 12px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+input[type=submit]:hover {
+    background-color: #baaade;
+}
+
+.form-errors {
+    list-style-type: none;
+    padding: 0;
+}

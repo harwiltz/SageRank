@@ -17,6 +17,7 @@ import io.github.harwiltz.sagerank._
 import auth.SessionManager
 
 case class UserCredentials(username: String, password: String)
+case class RegisterUserForm(username: String, password: String, retryPassword: String)
 
 object PasswordManager {
   import java.security.SecureRandom
@@ -65,6 +66,14 @@ class LoginController @Inject()(messagesAction: MessagesActionBuilder,
     )(UserCredentials.apply)(UserCredentials.unapply)
   )
 
+  val registerForm = Form(
+    mapping(
+      "username" -> nonEmptyText(minLength = 4),
+      "password" -> nonEmptyText(minLength = 8),
+      "retryPassword" -> nonEmptyText(minLength = 8)
+    )(RegisterUserForm.apply)(RegisterUserForm.unapply)
+  )
+
   lazy val firestoreOptions = FirestoreOptions.getDefaultInstance().toBuilder()
     .setProjectId("supervisor-trailer")
     .setCredentials(GoogleCredentials.getApplicationDefault)
@@ -104,5 +113,33 @@ class LoginController @Inject()(messagesAction: MessagesActionBuilder,
     Redirect("/login").withNewSession
   }
 
-  def newUser = TODO
+  def newUser = messagesAction { implicit request: MessagesRequest[AnyContent] =>
+    Ok(views.html.register(registerForm))
+  }
+
+  def register = messagesAction { implicit request: MessagesRequest[AnyContent] =>
+    registerForm.bindFromRequest.fold(
+      err => {
+        BadRequest(views.html.register(err))
+      },
+      credentials => {
+        val docRef = db.collection("users").document(credentials.username)
+        docRef.get.get.exists match {
+          case true => {
+            BadRequest(views.html.register(registerForm, List("Username is taken")))
+          }
+          case false => {
+            if(credentials.password.equals(credentials.retryPassword)) {
+              val passwordHash = PasswordManager.hash(credentials.password)
+              val data = new HashMap[String, Object](){ put("password", passwordHash) }
+              docRef.set(data)
+              Redirect("/login").withNewSession
+            } else {
+              BadRequest(views.html.register(registerForm, List("Passwords don't match")))
+            }
+          }
+        }
+      }
+    )
+  }
 }

@@ -1,0 +1,30 @@
+@(form: Form[RegisterUserForm], errors: List[String] = List())(implicit request: MessagesRequestHeader)
+
+<html>
+  <head>
+    <title>SageRank Registration</title>
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+    <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/SageRankLogo32x32.png")">
+  </head>
+  <body>
+    <div class="content">
+      <div class="logo">
+	<img class="pixelized" src="@routes.Assets.versioned("images/SageRankLogo32x32.png")"></img>
+	<h1>SageRank</h1>
+	<h2>Register a new account</h2>
+      </div>
+      @helper.form(action = routes.LoginController.register()) {
+      @helper.CSRF.formField
+      @helper.inputText(form("username"), 'size -> 30, '_label -> "Username")
+      @helper.inputPassword(form("password"), 'size -> 30, '_label -> "Password")
+      @helper.inputPassword(form("retryPassword"), 'size -> 30, '_label -> "Confirm password")
+      <input type="submit" value="Register">
+      }
+      <ul class="form-errors">
+	@for(error <- errors) {
+	<li class="form-error">@error</li>
+	}
+      </ul>
+    </div>
+  </body>
+</html>
